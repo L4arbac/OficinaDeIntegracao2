@@ -72,8 +72,7 @@ Para garantir o bom funcionamento do sistema de Registro de Presença, implement
 - **Front-End**: React com Material UI para a interface de usuário.
 - **Back-End**: Node.js com Express.
 - **Banco de Dados**: MySQL.
-- **Testes**: Jest e Mocha.
-- **Integração Contínua**: GitHub Actions para automação dos testes.
+- **Testes**: Jest, Mocha, SuperTest, Cypress.
 
 ---
 

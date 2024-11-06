@@ -29,6 +29,9 @@ O sistema foi planejado seguindo uma arquitetura de três camadas (3-Tier), comp
 - **Back-End**: Implementado em Node.js com Express, gerenciando a lógica de negócios e a comunicação com o banco de dados.
 - **Banco de Dados**: MySQL, utilizado para o armazenamento de informações sobre usuários, oficinas e registros de presença.
 
+![Descrição da Imagem](./Diagramas/Diagrama%20da%20arquitetura.png)
+
+
 ## 4. Estratégia de Automação de Testes
 
 Para garantir o bom funcionamento do sistema de Registro de Presença, implementamos uma estratégia de automação de testes que cobre testes unitários, de integração e de ponta a ponta, focando nas principais funcionalidades.

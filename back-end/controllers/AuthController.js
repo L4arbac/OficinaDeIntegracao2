@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const SECRET_KEY = 'chave_test';
-
+//
 
 const generateToken = (user) => {
     return jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {

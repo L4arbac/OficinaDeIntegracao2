@@ -1,0 +1,145 @@
+# Documentação da API de Workshops
+
+## 1. Criar um Workshop
+Método: POST
+URL: /workshops
+Descrição: Cria um novo workshop.
+Cabeçalhos:
+  - Authorization: Token (obrigatório)
+
+Exemplo de Corpo da Requisição:
+{
+    "name": "Workshop de Node.js",
+    "description": "Aprenda Node.js com exemplos práticos"
+}
+
+Exemplo de Resposta (Sucesso):
+{
+    "message": "Workshop criado com sucesso!",
+    "workshop": {
+        "id": 1,
+        "name": "Workshop de Node.js",
+        "description": "Aprenda Node.js com exemplos práticos",
+        "professorId": 1,
+        "createdAt": "2024-11-29T10:00:00Z",
+        "updatedAt": "2024-11-29T10:00:00Z"
+    }
+}
+
+---
+
+## 2. Listar Todos os Workshops
+Método: GET
+URL: /workshops
+Descrição: Recupera todos os workshops, incluindo detalhes sobre o professor e os alunos.
+Cabeçalhos:
+  - Authorization: Token (obrigatório)
+
+Exemplo de Resposta:
+[
+    {
+        "id": 1,
+        "name": "Workshop de Node.js",
+        "description": "Aprenda Node.js com exemplos práticos",
+        "professor": {
+            "id": 1,
+            "name": "John Doe",
+            "email": "johndoe@example.com"
+        },
+        "students": [
+            {
+                "id": 2,
+                "name": "Alice",
+                "email": "alice@example.com"
+            },
+            {
+                "id": 3,
+                "name": "Bob",
+                "email": "bob@example.com"
+            }
+        ]
+    }
+]
+
+---
+
+## 3. Obter Workshop por ID
+Método: GET
+URL: http://localhost:3000/workshops/1
+Descrição: Recupera os detalhes de um workshop específico pelo seu ID.
+Cabeçalhos:
+  - Authorization: Token (obrigatório)
+
+Exemplo de Resposta:
+{
+    "id": 1,
+    "name": "Workshop de Node.js",
+    "description": "Aprenda Node.js com exemplos práticos",
+    "professor": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "johndoe@example.com"
+    },
+    "students": [
+        {
+            "id": 2,
+            "name": "Alice",
+            "email": "alice@example.com"
+        },
+        {
+            "id": 3,
+            "name": "Bob",
+            "email": "bob@example.com"
+        }
+    ]
+}
+
+---
+
+## 4. Adicionar Alunos a um Workshop
+Método: POST
+URL: /workshops/students
+Descrição: Adiciona um ou mais alunos a um workshop.
+Cabeçalhos:
+  - Authorization: Token (obrigatório)
+
+Exemplo de Corpo da Requisição:
+{
+    "workshopId": 1,
+    "studentIds": [2, 3]
+}
+
+Exemplo de Resposta (Sucesso):
+{
+    "message": "Alunos adicionados ao workshop com sucesso."
+}
+
+---
+
+## 5. Remover um Aluno de um Workshop
+Método: DELETE
+URL: /workshops/students
+Descrição: Remove um aluno de um workshop.
+Cabeçalhos:
+  - Authorization: Token (obrigatório)
+
+Exemplo de Corpo da Requisição:
+{
+    "workshopId": 1,
+    "studentId": 2
+}
+
+Exemplo de Resposta (Sucesso):
+{
+    "message": "Estudante removido do workshop com sucesso."
+}
+
+---
+
+## Notas Importantes:
+- Cabeçalho Authorization: Certifique-se de incluir um token válido em todas as requisições protegidas.
+- Gerar Tokens: Tokens podem ser gerados usando a rota /auth/login.
+- Níveis de Acesso:
+  - admin: Acesso total.
+  - professor: Gerencia workshops e alunos.
+  - user: Acesso limitado.

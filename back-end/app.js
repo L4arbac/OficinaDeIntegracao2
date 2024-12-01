@@ -1,19 +1,27 @@
 const express = require('express');
 const cors = require('cors');
-const AuthController = require('./controllers/authController');
+const authRoutes = require('./routes/AuthRoutes'); // Importa o arquivo de rotas de autenticação
+const workshopRoutes = require('./routes/WorkshopRoutes'); // Importa o arquivo de rotas de workshops
+const initializeDatabase = require('./dbInitializer'); // Importa o inicializador do banco
 
 const app = express();
 
-
 app.use(cors());
-
 app.use(express.json());
 
-app.post('/login', AuthController.login);     
-app.post('/register', AuthController.register);
-app.get('/protected', AuthController.authenticateToken, (req, res) => {
-    res.status(200).json({ message: 'Rota protegida acessada', user: req.user });
-});
+// Inicializa o banco de dados
+initializeDatabase()
+    .then(() => {
+        console.log('Banco de dados inicializado com sucesso.');
+    })
+    .catch((err) => {
+        console.error('Erro ao inicializar o banco de dados:', err.message);
+        process.exit(1); // Encerra a aplicação se falhar
+    });
+
+// Usa os arquivos de rotas
+app.use('/', authRoutes); // Rotas de autenticação
+app.use('/', workshopRoutes); // Rotas de workshops
 
 const PORT = 3000;
 app.listen(PORT, () => {

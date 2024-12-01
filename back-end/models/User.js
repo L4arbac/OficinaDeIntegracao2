@@ -7,6 +7,10 @@ const User = sequelize.define('User', {
         autoIncrement: true,
         primaryKey: true,
     },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -19,9 +23,21 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    role: {
+        type: DataTypes.ENUM('admin', 'professor', 'user'),
+        allowNull: false,
+    },
+    RA: {
+        type: DataTypes.STRING,
+        allowNull: true, 
+    },
+    curso: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     tableName: 'users',
-    timestamps: true, 
+    timestamps: true,
 });
 
 module.exports = User;

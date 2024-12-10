@@ -1,0 +1,23 @@
+/* Estilo geral para barra de rolagem */
+body {
+    overflow-y: scroll; /* Garante que o scroll sempre apareça */
+}
+
+::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+    background: #f4f4f9; /* Cor do trilho */
+    border-radius: 10px; /* Deixa o trilho arredondado */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #012a60; /* Cor do "polegar" da barra */
+    border-radius: 10px; /* Deixa o "polegar" arredondado */
+    border: 2px solid #f4f4f9; /* Adiciona uma borda que dá sensação de espaço */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #f0a500; /* Cor ao passar o mouse */
+}

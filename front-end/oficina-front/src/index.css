@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* Estilizando a barra de rolagem */
+::-webkit-scrollbar {
+  width: 8px; /* Largura da barra de rolagem */
+}
+
+::-webkit-scrollbar-track {
+  background: #f4f4f9; /* Cor do trilho */
+  border-radius: 5px; /* Deixa o trilho arredondado */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #012a60; /* Cor do "polegar" da barra */
+  border-radius: 5px; /* Deixa o "polegar" arredondado */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Suaviza as alterações de cor */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #f0a500; /* Cor ao passar o mouse */
+  border-color: #012a60; /* Muda a borda para criar contraste */
+}
+
+/* Para scroll suave ao movimentar */
+* {
+  scroll-behavior: smooth; /* Habilita movimento suave no scroll */
+}

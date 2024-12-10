@@ -9,7 +9,7 @@ module.exports = {
         const { name, description } = req.body;
 
         try {
-            const token = req.headers['authorization']?.split(' ')[1];
+            const token = req.headers['authorization'];
             const decoded = jwtUtils.authenticateToken(token);
 
             if (!['admin', 'professor'].includes(decoded.role)) {
@@ -57,21 +57,35 @@ module.exports = {
     },
 
     addStudents: async (req, res) => {
-        const { workshopId, studentIds } = req.body;
+        const { workshopId, selectedStudentId } = req.body;
 
         try {
-            const token = req.headers['authorization']?.split(' ')[1];
+            const token = req.headers['authorization'];
             const decoded = jwtUtils.authenticateToken(token);
 
             if (!['admin', 'professor'].includes(decoded.role)) {
                 return res.status(403).json({ message: 'Acesso negado. Apenas professores ou administradores podem adicionar alunos.' });
             }
 
-            const workshop = await Workshop.findByPk(workshopId);
+            const workshop = await Workshop.findByPk(workshopId,{
+                include: [
+                    { model: User, as: 'professor', attributes: ['id', 'name', 'email'] },
+                    { model: User, as: 'students', attributes: ['id', 'name', 'email'] },
+                ],
+            });
+
             if (!workshop) {
                 return res.status(404).json({ message: 'Workshop não encontrado' });
             }
-            await workshop.addStudents(studentIds);
+
+            // Verifica se o estudante já está vinculado ao workshop
+            const alreadyLinked = workshop.students.some(student => student.id == selectedStudentId);
+            if (alreadyLinked) {
+                return res.status(400).json({ message: 'Estudante já vinculado ao workshop' });
+            }
+
+
+            await workshop.addStudent(selectedStudentId);
 
             res.status(200).json({ message: 'Alunos adicionados ao workshop com sucesso.' });
         } catch (error) {
@@ -113,8 +127,7 @@ module.exports = {
             }
             res.status(500).json({ message: 'Erro ao buscar workshop', error: error.message || error });
         }
-    },
-    
+    },   
 
     removeStudent: async (req, res) => {
         const { workshopId, studentId } = req.body;

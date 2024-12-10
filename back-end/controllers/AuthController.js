@@ -49,4 +49,53 @@ module.exports = {
             res.status(500).json({ message: 'Erro ao registrar usuário', error });
         }
     },
+    listProfessors: async (req, res) => {
+        try {
+            const token = req.headers['authorization'];
+            const decoded = authenticateToken(token);
+
+            if (!['admin', 'professor'].includes(decoded.role)) {
+                return res.status(403).json({ message: 'Acesso negado. Apenas professores ou administradores podem listar profesores.' });
+            }
+            // Filtrar usuários com role 'professor'
+            const professors = await User.findAll({
+                where: { role: 'professor' }, // Filtro de role
+                attributes: ['id', 'name'], // Seleciona apenas os campos necessários
+            });
+
+            if (professors.length === 0) {
+                return res.status(404).json({ message: 'Nenhum professor encontrado' });
+            }
+
+            res.status(200).json(professors);
+        } catch (error) {
+            console.error('Erro ao listar professores:', error);
+            res.status(500).json({ message: 'Erro interno no servidor', error });
+        }
+    },
+    listStudents: async (req, res) => {
+        try {
+            const token = req.headers['authorization'];
+            const decoded = authenticateToken(token);
+
+            if (!['admin', 'professor'].includes(decoded.role)) {
+                return res.status(403).json({ message: 'Acesso negado. Apenas professores ou administradores podem listar alunos.' });
+            }
+            // Filtrar usuários com role 'professor'
+            const professors = await User.findAll({
+                where: { role: 'user' }, // Filtro de role
+                attributes: ['id', 'name'], // Seleciona apenas os campos necessários
+            });
+
+            if (professors.length === 0) {
+                return res.status(404).json({ message: 'Nenhum estudante encontrado' });
+            }
+
+            res.status(200).json(professors);
+        } catch (error) {
+            console.error('Erro ao listar estudantes:', error);
+            res.status(500).json({ message: 'Erro interno no servidor', error });
+        }
+    },
+
 };

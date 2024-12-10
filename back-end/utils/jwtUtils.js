@@ -4,7 +4,7 @@ const SECRET_KEY = '1651815165165151515557846';
 module.exports = {
     generateToken: (user) => {
         return jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, name: user.name, role: user.role },
             SECRET_KEY,
             { expiresIn: '1h' } 
         );

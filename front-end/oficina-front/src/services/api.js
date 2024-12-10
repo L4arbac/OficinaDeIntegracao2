@@ -1,10 +1,13 @@
-const API_URL = "http://localhost:3000"; // URL base do backend
+const API_URL = "http://localhost:3000"; 
 
-// Função genérica para chamadas à API
-export const apiRequest = async (endpoint, method = "GET", body = null) => {
+export const apiRequest = async (endpoint, method = "GET", body = null,token = null) => {
     const headers = {
         "Content-Type": "application/json",
     };
+
+    if (token) {
+        headers.Authorization = token;
+    }
 
     try {
         const response = await fetch(`${API_URL}${endpoint}`, {
@@ -25,7 +28,61 @@ export const apiRequest = async (endpoint, method = "GET", body = null) => {
     }
 };
 
+//#region Users
+
 // Serviço para login
 export const login = async (email, password) => {
     return await apiRequest("/login", "POST", { email, password });
 };
+// Serviço para registrar um novo usuário
+export const register = async (name, email, password, role = "user") => {
+    const data = { name, email, password, role };
+    return await apiRequest("/register", "POST", data);
+};
+
+
+// Serviço para listar professores
+export const listProfessors = async (token) => {
+    return await apiRequest("/listProfessor", "GET", null, token);
+};
+
+// Serviço para listar alunos
+export const listStudents = async (token) => {
+    return await apiRequest("/listStudents", "GET", null, token);
+};
+//#endregion
+
+//#region WORKSHOP
+
+// Serviço para criar um workshop
+export const createWorkshop = async (workshopData, token) => {
+    return await apiRequest("/workshops", "POST", workshopData, token);
+};
+
+// Serviço para listar workshops
+export const listWorkshops = async (token) => {
+    return await apiRequest("/workshops", "GET", null, token);
+};
+
+// Serviço para obter detalhes de um workshop pelo ID
+export const getWorkshopById = async (id, token) => {
+    return await apiRequest(`/workshops/${id}`, "GET", null, token);
+};
+
+// Serviço para adicionar estudantes a um workshop
+export const addStudents = async (studentData, token) => {
+    return await apiRequest("/workshops/students", "POST", studentData, token);
+};
+
+// Serviço para remover um estudante de um workshop
+export const removeStudent = async (studentData, token) => {
+    return await apiRequest("/workshops/students", "DELETE", studentData, token);
+};
+
+// Serviço para finalizar um workshop
+export const finalizeWorkshop = async (id, token) => {
+    return await apiRequest(`/workshops/${id}/finalize`, "POST", null, token);
+};
+
+//#endregion
+

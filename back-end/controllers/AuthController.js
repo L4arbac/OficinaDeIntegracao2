@@ -26,29 +26,34 @@ module.exports = {
     },
 
     register: async (req, res) => {
-        const { name, email, password } = req.body;
-
+        const { name, email, password, role, RA, curso } = req.body;
+    
         try {
             const existingUser = await User.findOne({ where: { email } });
             if (existingUser) {
-                return res.status(400).json({ message: 'E-mail já está em uso' });
+                return res.status(400).json({ message: "E-mail já está em uso" });
             }
-            
-            if (role === 'professor') {
-                if (!RA || !curso) {
-                    return res.status(400).json({ message: 'RA e Curso são obrigatórios para professores' });
-                }
-            }
+    
             const hashedPassword = await bcrypt.hash(password, 10);
-
-            const newUser = await User.create({ name, email, password: hashedPassword });
-
+    
+            const newUser = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+                role,
+                RA,
+                curso,
+            });
+    
             const token = generateToken(newUser);
+    
             res.status(201).json({ token });
         } catch (error) {
-            res.status(500).json({ message: 'Erro ao registrar usuário', error });
+            console.error("Erro ao registrar usuário:", error);
+            res.status(500).json({ message: "Erro ao registrar usuário", error });
         }
     },
+    
     listProfessors: async (req, res) => {
         try {
             const token = req.headers['authorization'];

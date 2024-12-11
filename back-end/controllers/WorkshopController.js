@@ -10,11 +10,16 @@ module.exports = {
 
         try {
             const token = req.headers['authorization'];
+            if (!token) {
+                return res.status(403).json({ message: 'Token não fornecido no cabeçalho Authorization' });
+            }
+
             const decoded = jwtUtils.authenticateToken(token);
 
             if (!['admin', 'professor'].includes(decoded.role)) {
                 return res.status(403).json({ message: 'Acesso negado. Apenas professores ou administradores podem criar workshops.' });
             }
+
             const workshop = await Workshop.create({
                 name,
                 description,
@@ -23,10 +28,11 @@ module.exports = {
 
             res.status(201).json({ message: 'Workshop criado com sucesso!', workshop });
         } catch (error) {
+            console.error('Erro ao criar workshop:', error);
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({ message: 'Token inválido ou expirado' });
             }
-            res.status(500).json({ message: 'Erro ao criar workshop', error });
+            res.status(500).json({ message: 'Erro ao criar workshop', error: error.message || error });
         }
     },
 
@@ -61,13 +67,17 @@ module.exports = {
 
         try {
             const token = req.headers['authorization'];
+            if (!token) {
+                return res.status(403).json({ message: 'Token não fornecido no cabeçalho Authorization' });
+            }
+
             const decoded = jwtUtils.authenticateToken(token);
 
             if (!['admin', 'professor'].includes(decoded.role)) {
                 return res.status(403).json({ message: 'Acesso negado. Apenas professores ou administradores podem adicionar alunos.' });
             }
 
-            const workshop = await Workshop.findByPk(workshopId,{
+            const workshop = await Workshop.findByPk(workshopId, {
                 include: [
                     { model: User, as: 'professor', attributes: ['id', 'name', 'email'] },
                     { model: User, as: 'students', attributes: ['id', 'name', 'email'] },
@@ -78,47 +88,46 @@ module.exports = {
                 return res.status(404).json({ message: 'Workshop não encontrado' });
             }
 
-            // Verifica se o estudante já está vinculado ao workshop
             const alreadyLinked = workshop.students.some(student => student.id == selectedStudentId);
             if (alreadyLinked) {
                 return res.status(400).json({ message: 'Estudante já vinculado ao workshop' });
             }
 
-
             await workshop.addStudent(selectedStudentId);
 
             res.status(200).json({ message: 'Alunos adicionados ao workshop com sucesso.' });
         } catch (error) {
+            console.error('Erro ao adicionar alunos:', error);
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({ message: 'Token inválido ou expirado' });
             }
-            res.status(500).json({ message: 'Erro ao adicionar alunos ao workshop', error });
+            res.status(500).json({ message: 'Erro ao adicionar alunos ao workshop', error: error.message || error });
         }
     },
 
     getWorkshopById: async (req, res) => {
         const { id } = req.params;
-    
+
         try {
             const token = req.headers['authorization'];
             if (!token) {
                 return res.status(403).json({ message: 'Token não fornecido no cabeçalho Authorization' });
             }
-    
+
             jwtUtils.authenticateToken(token);
-    
+
             const workshop = await Workshop.findOne({
-                where: { id }, 
+                where: { id },
                 include: [
                     { model: User, as: 'professor', attributes: ['id', 'name', 'email'] },
                     { model: User, as: 'students', attributes: ['id', 'name', 'email'] },
                 ],
             });
-    
+
             if (!workshop) {
                 return res.status(404).json({ message: 'Workshop não encontrado' });
             }
-    
+
             res.status(200).json(workshop);
         } catch (error) {
             console.error('Erro ao buscar workshop:', error);
@@ -127,7 +136,7 @@ module.exports = {
             }
             res.status(500).json({ message: 'Erro ao buscar workshop', error: error.message || error });
         }
-    },   
+    },
 
     removeStudent: async (req, res) => {
         const { workshopId, studentId } = req.body;
@@ -162,7 +171,7 @@ module.exports = {
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({ message: 'Token inválido ou expirado' });
             }
-            res.status(500).json({ message: 'Erro ao remover estudante do workshop', error });
+            res.status(500).json({ message: 'Erro ao remover estudante do workshop', error: error.message || error });
         }
     },
 
@@ -197,7 +206,6 @@ module.exports = {
                 return res.status(400).json({ message: 'O workshop já está finalizado.' });
             }
 
-           
             workshop.status = 'finalizado';
             workshop.dataFinalizacao = new Date();
             await workshop.save();
@@ -222,8 +230,7 @@ module.exports = {
             if (error.name === 'JsonWebTokenError') {
                 return res.status(401).json({ message: 'Token inválido ou expirado' });
             }
-            res.status(500).json({ message: 'Erro ao finalizar workshop', error });
+            res.status(500).json({ message: 'Erro ao finalizar workshop', error: error.message || error });
         }
     },
-
 };

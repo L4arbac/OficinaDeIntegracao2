@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const dbConfig = {
     host: '127.0.0.1',
     user: 'root',
-    password: '01020304Gu!',
+    password: 'senhaaqui',
 };
 
 const databaseName = 'oficina2';

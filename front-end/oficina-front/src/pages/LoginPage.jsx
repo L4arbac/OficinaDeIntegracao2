@@ -5,7 +5,6 @@ import InputField from "../components/common/InputField/InputField";
 import SubmitButton from "../components/common/SubmitButton/SubmitButton";
 import ellpLogo from "../assets/images/logo-navbar.png";
 
-
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -14,14 +13,13 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const data = await login(email, password);
             localStorage.setItem("token", data.token);
             setError(null);
-            navigate("/home"); 
+            navigate("/home");
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Erro ao tentar fazer login. Tente novamente mais tarde.");
         }
     };
 
@@ -35,6 +33,7 @@ const LoginPage = () => {
                         label="Email:"
                         type="email"
                         id="email"
+                        name="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -43,11 +42,12 @@ const LoginPage = () => {
                         label="Senha:"
                         type="password"
                         id="password"
+                        name="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    <SubmitButton>Entrar</SubmitButton>
+                    <SubmitButton id="botaoEnviar">Entrar</SubmitButton>
                 </form>
             </div>
             <div style={styles.imageContainer}>

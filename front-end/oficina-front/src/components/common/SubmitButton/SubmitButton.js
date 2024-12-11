@@ -1,8 +1,8 @@
 import React from "react";
 
-const SubmitButton = ({ children }) => {
+const SubmitButton = ({ children , id }) => {
     return (
-        <button type="submit" style={styles.button}>
+        <button type="submit" id={id} style={styles.button}>
             {children}
         </button>
     );

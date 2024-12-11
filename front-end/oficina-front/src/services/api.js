@@ -35,10 +35,12 @@ export const login = async (email, password) => {
     return await apiRequest("/login", "POST", { email, password });
 };
 // Serviço para registrar um novo usuário
-export const register = async (name, email, password, role = "user") => {
-    const data = { name, email, password, role };
-    return await apiRequest("/register", "POST", data);
+export const register = async (formData, token) => {
+    return await apiRequest("/register", "POST", formData, {
+        Authorization: `Bearer ${token}`,
+    });
 };
+
 
 
 // Serviço para listar professores

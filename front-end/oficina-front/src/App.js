@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import CreateWorkshopPage from "./pages/CreateWorkshopPage";
-import RegisterUserPage from "./pages/RegisterUserPage";
+import CreateUserPage from "./pages/CreateUserPage";
 import WorkshopDetailsPage from "./pages/WorkshopDetailsPage";
+
  
 
 const App = () => {
@@ -38,7 +39,11 @@ const App = () => {
         />
 
         {/* Rota para cadastrar um novo usuário */}
-        <Route path="/register-user" element={<RegisterUserPage />}/>
+        <Route path="/register-user"
+          element={
+            isAuthenticated() ? <CreateUserPage /> : <Navigate to="/" replace />
+          }
+        />
 
         <Route 
           path="/workshop-details/:id" 

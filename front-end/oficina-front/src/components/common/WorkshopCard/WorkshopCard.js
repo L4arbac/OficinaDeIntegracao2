@@ -10,7 +10,7 @@ const WorkshopCard = ({ title, description, date, id, studentsLenght }) => {
     };
 
     return (
-        <div
+        <div id={id}
             style={{
                 ...styles.card,
                 backgroundColor: isHovered ? "#FAFAFA" : "#fff",

@@ -51,7 +51,7 @@ const Header = () => {
         <header style={styles.header}>
             <div style={styles.container}>
                 {/* Ícone de Home com o texto "ELLP" */}
-                <div style={styles.homeSection}>
+                <div id="home" style={styles.homeSection}>
                     <Link to="/home" style={styles.homeLink}>
                         <FaHome style={styles.icon} />
                         <span style={styles.homeText}>ELLP</span>
@@ -64,7 +64,7 @@ const Header = () => {
                 </div>
 
                 {/* Nome do usuário com ícone e dropdown */}
-                <div style={styles.userSection} ref={dropdownRef}>
+                <div id="userIcon" style={styles.userSection} ref={dropdownRef}>
                     <div
                         style={styles.userIconWrapper}
                         onClick={toggleDropdown}
@@ -79,6 +79,7 @@ const Header = () => {
                         <div style={styles.dropdown}>
                             <Link
                                 to="/create-workshop"
+                                id="create"
                                 style={styles.dropdownItem}
                                 onClick={() => setDropdownOpen(false)}
                             >

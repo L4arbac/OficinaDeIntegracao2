@@ -233,4 +233,73 @@ module.exports = {
             res.status(500).json({ message: 'Erro ao finalizar workshop', error: error.message || error });
         }
     },
+
+    listCertificates: async (req, res) => {
+        const { id } = req.params; // Pegando o ID do workshop da URL
+    
+        try {
+            const token = req.headers['authorization'];
+            if (!token) {
+                return res.status(403).json({ message: 'Token não fornecido no cabeçalho Authorization' });
+            }
+    
+            jwtUtils.authenticateToken(token);
+    
+            // Verifica se o workshop existe
+            const workshop = await Workshop.findByPk(id);
+            if (!workshop) {
+                return res.status(404).json({ message: 'Workshop não encontrado' });
+            }
+    
+            const certificatesPath = path.join(__dirname, '../certificates', `workshop_${id}`);
+    
+            // Verifica se a pasta existe
+            if (!fs.existsSync(certificatesPath)) {
+                return res.status(404).json({ message: 'Nenhum certificado encontrado para este workshop.' });
+            }
+    
+            // Lista os arquivos na pasta
+            const files = fs.readdirSync(certificatesPath);
+            const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+    
+            if (pdfFiles.length === 0) {
+                return res.status(404).json({ message: 'Nenhum certificado disponível.' });
+            }
+    
+            // Retorna os arquivos disponíveis para download
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            const fileLinks = pdfFiles.map(file => ({
+                name: file,
+                url: `${baseUrl}/workshops/${id}/certificates/${file}`,
+            }));
+    
+            res.status(200).json(fileLinks);
+        } catch (error) {
+            console.error('Erro ao listar certificados:', error);
+            res.status(500).json({ message: 'Erro ao listar certificados', error: error.message || error });
+        }
+    },
+
+    downloadCertificate : async (req, res) => {
+        const { id, filename } = req.params;
+    
+        try {
+    
+            // Caminho completo do arquivo
+            const filePath = path.join(__dirname, '../certificates', `workshop_${id}`, filename);
+    
+            // Verifica se o arquivo existe
+            if (!fs.existsSync(filePath)) {
+                return res.status(404).json({ message: 'Certificado não encontrado.' });
+            }
+    
+            // Envia o arquivo para o usuário
+            res.download(filePath);
+        } catch (error) {
+            console.error('Erro ao baixar certificado:', error);
+            res.status(500).json({ message: 'Erro ao baixar certificado', error: error.message || error });
+        }   
+    },
+    
+    
 };

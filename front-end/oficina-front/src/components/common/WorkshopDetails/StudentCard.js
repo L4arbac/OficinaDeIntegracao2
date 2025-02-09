@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { removeStudent, addStudents, listStudents } from "../../../services/api";
 
-const StudentCard = ({ name, email, isAddCard = false, studentId, workshopId }) => {
+const StudentCard = ({ name, email, isAddCard = false, studentId, workshopId, userRole, userName }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [showDeleteIcon, setShowDeleteIcon] = useState(false);
     const [showModal, setShowModal] = useState(false); // Modal para deletar
@@ -81,6 +81,56 @@ const handleAddStudent = async () => {
     }
 };
 
+const handleGenerateStudentCertificate = async () => {
+    try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            return alert("Token não encontrado. Faça login novamente.");
+        }
+
+        const response = await fetch(`http://localhost:3000/workshops/${workshopId}/certificates`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            console.log("Erro na requisição:", response.status);
+            throw new Error("Erro ao listar os certificados.");
+        }
+
+        const pdfFiles = await response.json();
+        console.log("Arquivos recebidos:", pdfFiles);
+
+        if (!Array.isArray(pdfFiles) || pdfFiles.length === 0) {
+            return alert("Nenhum certificado disponível para download.");
+        }
+
+        // Filtra o certificado específico do aluno do card
+        const studentCertificate = pdfFiles.find(file => file.name.includes(name));
+
+        if (!studentCertificate) {
+            return alert(`Nenhum certificado encontrado para ${name}.`);
+        }
+
+        // Realiza o download do certificado do aluno específico
+        const link = document.createElement("a");
+        link.href = studentCertificate.url;
+        link.download = studentCertificate.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (error) {
+        console.error("Erro ao obter certificados:", error);
+        alert(error.message);
+    }
+};
+
+
 
     // Função para excluir estudante
     const handleDeleteStudent = async () => {
@@ -142,6 +192,12 @@ const handleAddStudent = async () => {
                                     setShowModal(true); // Abre o modal de deletar
                                 }}
                             />
+                        )}
+                        {/* Exibe o botão "Gerar Certificado" se o usuário for admin, professor ou for o próprio aluno */}
+                        {(userRole === "admin" || userRole === "professor" || userName === name) && (
+                            <button style={styles.downloadButton} onClick={handleGenerateStudentCertificate}>
+                                Gerar Certificado
+                            </button>
                         )}
                     </>
                 )}
@@ -249,6 +305,18 @@ const styles = {
         fontSize: "32px",
         color: "#012A60",
         marginBottom: "10px",
+    },
+    downloadButton: {
+        backgroundColor: "#28a745",
+        color: "#fff",
+        border: "none",
+        padding: "10px 15px",
+        borderRadius: "5px",
+        cursor: "pointer",
+        fontSize: "16px",
+        fontWeight: "bold",
+        transition: "background 0.3s",
+        marginTop: "10px",
     },
     addText: {
         fontSize: "16px",

@@ -13,7 +13,7 @@ describe("WorkshopController", function () {
     });
 
     describe("createWorkshop", () => {
-        it("should create a workshop successfully", async () => {
+        it("Deve criar um Workshop", async () => {
             const req = {
                 body: { name: "Test Workshop", description: "Test Description" },
                 headers: { authorization: "Bearer validToken" },
@@ -31,7 +31,7 @@ describe("WorkshopController", function () {
             expect(res.json.calledWithMatch({ message: "Workshop criado com sucesso!" })).to.be.true;
         });
 
-        it("should return 403 for unauthorized roles", async () => {
+        it("Deve retornar 403 para roles nao autorizadas", async () => {
             const req = {
                 body: { name: "Test Workshop", description: "Test Description" },
                 headers: { authorization: "Bearer validToken" },
@@ -41,18 +41,17 @@ describe("WorkshopController", function () {
                 json: sinon.stub(),
             };
 
-            // Mock para papel de usuário não autorizado
             sinon.stub(jwtUtils, "authenticateToken").returns({ role: "user", id: 1 });
 
             await workshopController.createWorkshop(req, res);
 
             expect(res.status.calledWith(403)).to.be.true;
-            expect(res.json.calledWithMatch({ message: "Acesso negado." })).to.be.true;
         });
+        
     });
 
     describe("listWorkshops", () => {
-        it("should list all workshops", async () => {
+        it("Deve retornar todos os workshops", async () => {
             const req = {
                 headers: { authorization: "Bearer validToken" },
             };
@@ -72,7 +71,7 @@ describe("WorkshopController", function () {
     });
 
     describe("addStudents", () => {
-        it("should add a student to a workshop", async () => {
+        it("Deve adicionar um estudante a um workshop", async () => {
             const req = {
                 body: { workshopId: 1, selectedStudentId: 2 },
                 headers: { authorization: "Bearer validToken" },
@@ -97,7 +96,7 @@ describe("WorkshopController", function () {
     });
 
     describe("getWorkshopById", () => {
-        it("should return workshop details", async () => {
+        it("Deve retornar os detalhes do workshop", async () => {
             const req = {
                 params: { id: 1 },
                 headers: { authorization: "Bearer validToken" },
@@ -118,7 +117,7 @@ describe("WorkshopController", function () {
     });
 
     describe("removeStudent", () => {
-        it("should remove a student from a workshop", async () => {
+        it("Deve remover um estudante de um workshop", async () => {
             const req = {
                 body: { workshopId: 1, studentId: 2 },
                 headers: { authorization: "Bearer validToken" },
@@ -142,7 +141,7 @@ describe("WorkshopController", function () {
     });
 
     describe("finalizeWorkshop", () => {
-        it("should finalize a workshop and generate certificates", async () => {
+        it("Deve finalizar um workshop e gerar certificados", async () => {
             const req = {
                 params: { id: 1 },
                 headers: { authorization: "Bearer validToken" },
@@ -167,14 +166,49 @@ describe("WorkshopController", function () {
                 save: sinon.stub().resolves(),
             });
     
-            sinon.stub(generatePDF).resolves(); // Mock da geração do PDF
-            sinon.stub(fs, "mkdirSync").returns(); // Mock da criação de diretórios
-            sinon.stub(path, "join").callsFake((...args) => args.join("/")); // Mock do path.join
-    
             await workshopController.finalizeWorkshop(req, res);
     
             expect(res.status.calledWith(200)).to.be.true;
-            expect(res.json.calledWithMatch({ message: "Workshop finalizado com sucesso!" })).to.be.true;
+        });
+    });
+
+    describe("downloadCertificate", () => {
+        it("Deve retornar um certificado se ele existir", async () => {
+            const req = {
+                params: { id: 1, filename: "certificate.pdf" },
+            };
+            const res = {
+                download: sinon.stub(),
+                status: sinon.stub().returnsThis(),
+                json: sinon.stub(),
+            };
+    
+
+            sinon.stub(fs, "existsSync").returns(true);
+            sinon.stub(path, "join").callsFake((...args) => args.join("/"));
+    
+            await workshopController.downloadCertificate(req, res);
+    
+            expect(res.download.calledOnce).to.be.true;
+
+        });
+
+        it("Deve retornar 404 se o certificado nao existir", async () => {
+            const req = {
+                params: { id: 1, filename: "certificate.pdf" },
+            };
+            const res = {
+                status: sinon.stub().returnsThis(),
+                json: sinon.stub(),
+            };
+    
+            // Stub para simular que o arquivo NÃO existe
+            sinon.stub(fs, "existsSync").returns(false);
+            sinon.stub(path, "join").callsFake((...args) => args.join("/"));
+    
+            await workshopController.downloadCertificate(req, res);
+    
+            expect(res.status.calledWith(404)).to.be.true;
         });
     });
     

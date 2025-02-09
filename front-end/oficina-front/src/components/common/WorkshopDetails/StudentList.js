@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import StudentCard from "./StudentCard";
 
-const StudentList = ({ students ,idWorkshop}) => {
+const StudentList = ({ students, idWorkshop }) => {
     const [showAddCard, setShowAddCard] = useState(false);
+    const [userRole, setUserRole] = useState(""); // Estado para armazenar a role do usuário
+    const [userName, setUserName] = useState(""); // Estado para armazenar o nome do usuário logado
 
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (token) {
             try {
-                const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decodifica o token (assume JWT)
-                const { role } = decodedToken;
+                const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decodifica o token
+                const { role, name } = decodedToken; // Obtém role e nome do usuário logado
+
+                setUserRole(role); 
+                setUserName(name);
 
                 if (role === "admin" || role === "professor") {
                     setShowAddCard(true);
@@ -32,8 +37,10 @@ const StudentList = ({ students ,idWorkshop}) => {
                             key={student.id}
                             name={student.name}
                             email={student.email}
-                            studentId ={student.id}
+                            studentId={student.id}
                             workshopId={idWorkshop}
+                            userRole={userRole} // Agora passamos a role do usuário logado
+                            userName={userName} // Passamos o nome do usuário logado
                         />
                     ))}
 
@@ -42,7 +49,6 @@ const StudentList = ({ students ,idWorkshop}) => {
                         <StudentCard
                             isAddCard={true}
                             workshopId={idWorkshop}
-                            
                         />
                     )}
                 </div>

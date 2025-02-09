@@ -4,7 +4,7 @@ const dbConfig = {
     host: '127.0.0.1', 
     user: 'root',      
     password: 'senhaaqui', 
-    database: 'oficina2',
+    database: 'dbaqui!',
 };
 
 const createConnection = async () => {

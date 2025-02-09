@@ -1,12 +1,12 @@
 const API_URL = "http://localhost:3000"; 
 
-export const apiRequest = async (endpoint, method = "GET", body = null,token = null) => {
+export const apiRequest = async (endpoint, method = "GET", body = null, token = null) => {
     const headers = {
         "Content-Type": "application/json",
     };
 
     if (token) {
-        headers.Authorization = token;
+        headers.Authorization = `Bearer ${token}`;
     }
 
     try {
@@ -28,20 +28,17 @@ export const apiRequest = async (endpoint, method = "GET", body = null,token = n
     }
 };
 
-//#region Users
+//#region USERS
 
 // Serviço para login
 export const login = async (email, password) => {
     return await apiRequest("/login", "POST", { email, password });
 };
+
 // Serviço para registrar um novo usuário
 export const register = async (formData, token) => {
-    return await apiRequest("/register", "POST", formData, {
-        Authorization: `Bearer ${token}`,
-    });
+    return await apiRequest("/register", "POST", formData, token);
 };
-
-
 
 // Serviço para listar professores
 export const listProfessors = async (token) => {
@@ -52,6 +49,7 @@ export const listProfessors = async (token) => {
 export const listStudents = async (token) => {
     return await apiRequest("/listStudents", "GET", null, token);
 };
+
 //#endregion
 
 //#region WORKSHOP
@@ -86,5 +84,9 @@ export const finalizeWorkshop = async (id, token) => {
     return await apiRequest(`/workshops/${id}/finalize`, "POST", null, token);
 };
 
-//#endregion
+// Serviço para listar certificados de um workshop
+export const listCertificates = async (id, token) => {
+    return await apiRequest(`/workshops/${id}/certificates`, "GET", null, token);
+};
 
+//#endregion
